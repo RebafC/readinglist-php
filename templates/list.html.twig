@@ -1,0 +1,19 @@
+{% extends "main.html.twig" %}
+
+{% block content %}
+<table>
+    <thead>
+        <tr><th>#</th><th>Title</th><th>Added</th><th>{% if showdel %}Deleted{% else %}Maintain{% endif %}</th></tr>
+    </thead>
+    <tbody>
+{% for row in rows %}
+        <tr>
+            <td>{{ "%03d"|format(row.id) }}</td>
+            <td class="text-truncate"><a href={{ row.url }}>{{ row.title|truncate(25) }}</a></td>
+            <td>{{ row.added }}</td>
+            <td>{% if showdel %}{{ row.deleted }}{% else %}button to delete{% endif %}</td>
+        </tr>                
+{% endfor %}
+    </tbody>
+</table>
+{% endblock%} {# block content #}
