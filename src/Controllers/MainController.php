@@ -2,9 +2,8 @@
 
 namespace App\Controllers;
 
-use ParagonIE\EasyDB\Factory;
 use App\Twig;
-
+use App\Repositories\ReadinglistRepository;
 
 class MainController
 {
@@ -12,27 +11,14 @@ class MainController
 
     private $twigvars = [];
 
-    private $assetPath;
-
     public function __construct()
     {
-        $this->assetPath = dirname($_SERVER['PHP_SELF']) . '/';
-
-        $this->db = Factory::fromArray([
-            sprintf('mysql:host=%s;dbname=%s', $_ENV['mysqlHost'], $_ENV['mysqlDatabase']),
-            $_ENV['mysqlUser'],
-            $_ENV['mysqlPassword']
-        ]);
     }
 
     public function index()
     {
-        ## TODO :: move to a model
-        ## TODO :: handle pagination
-        $rows = $this->db->run(<<<SQL
-SELECT `id`, `added`, `title`, `url` FROM `{$_ENV['mysqlTable']}`
-WHERE `deleted` IS NULL ORDER BY `id` DESC LIMIT 0,50;
-SQL);
+        $rlrepo = new ReadinglistRepository($this->db);
+        $rows = $rlrepo->getAllNotDeleted();
 
         foreach ($rows as &$r) {
                 $r['title'] = urldecode($r['title']);
@@ -46,11 +32,9 @@ SQL);
     }
 
     public function showdeleted()
-    {
-        $rows = $this->db->run(<<<SQL
-SELECT `id`, `added`, `title`, `url` FROM `{$_ENV['mysqlTable']}`
-WHERE `deleted` IS NOT NULL ORDER BY `id` DESC LIMIT 0,50;
-SQL);
+    {   
+        $rlrepo = new ReadinglistRepository($this->db);
+        $rows = $rlrepo->getAllDeleted();
 
         foreach ($rows as &$r) {
                 $r['title'] = urldecode($r['title']);
@@ -74,12 +58,9 @@ SQL);
         $xml->channel->addChild('description', 'Contains saved urls');
         $xml->channel->addChild('pubDate', date(DATE_RSS));
 
-        ## TODO :: move to a model
-        ## TODO :: handle different limits
-        $rows = $this->db->run(<<<SQL
-SELECT `id`, `added`, `title`, `url` FROM `{$_ENV['mysqlTable']}`
-WHERE `deleted` IS NULL ORDER BY `id` DESC LIMIT 0,50;
-SQL);
+        $rlrepo = new ReadinglistRepository($this->db);
+        $rows = $rlrepo->getAllNotDeleted();
+
         foreach ($rows as $row) {
             $inlineDescription = sprintf(
                 'Link: &lt;a href="%sindex.php?redirect=%s"&gt;%s&lt;/a&gt;<br/>',
@@ -100,56 +81,35 @@ SQL);
 
     public function add($url, $title)
     {
-        $this->addUrl($this->db, $_ENV['mysqlTable'], rawurldecode($url), $title);
+        $url = rawurldecode($url);
+        
+        $rlrepo = new ReadinglistRepository($this->db);
+        $rlrepo->add($url, $title);
 
         include BASE_PATH . '/templates/base.html.twig';
     }
 
     public function redirect()
     {
-        ## TODO :: move to a model
-        $url = $this->db->cell("SELECT `url` FROM `{$mysqlTable}` WHERE `id` = ?;", $_GET['redirect']);
+        $rlrepo = new ReadinglistRepository($this->db);
+        $url = $rlrepo->getUrlFromId();
 
-        if ($row !== []) {
+        if ($url !== []) {
             header("location: {$url}");
             die();
         }
-        echo('Error fetching row');
+        echo('Error fetching url');
     }
 
-    private function addUrl($db, $mysqlTable, $url, $title)
+    public function delete($id)
     {
-        ## TODO :: move to a model
-        $this->db->insert(
-            $mysqlTable,
-            [
-                'title' =>  htmlspecialchars(str_replace("'", '', $title ?? $this->getTitleFromUrl($url, $title))),
-                'url' => $url,
-                'host' => $this->getHostFromUrl($url),
-            ]
-        );
+        $rlrepo = new ReadinglistRepository($this->db);
+        $rlrepo->delete($id);
     }
 
-    private function getTitleFromUrl($url, $title)
+    public function activate($id)
     {
-        if ($this->isUrl($url)) {
-            $tags = get_meta_tags($url);
-            if (isset($tags['title'])) {
-                return $tags['title'];
-            }
-        }
-        return substr($url, 0, 50);
-    }
-
-    private function getHostFromUrl($url)
-    {
-        $parse = parse_url($url);
-
-        return $parse['host'] ?? $url;
-    }
-
-    private function isUrl($url)
-    {
-        return filter_var($url, FILTER_VALIDATE_URL);
+        $rlrepo = new ReadinglistRepository($this->db);
+        $rlrepo->activate($id);
     }
 }

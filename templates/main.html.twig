@@ -15,13 +15,24 @@
 
 <header>
     <h1>Reading List</h1>
-  </header>
+	<nav>
+		<a href="/">List Active</a>
+		<a href="/showdeleted">List Deleted</a>
+		<a href="/showxml">List as XML</a>
+	</nav>
+</header>
 
 {% block content %}{% endblock %}
 
 </body>
 <footer>
-<a href="https://www.flaticon.com/free-icons/browser" title="browser icons">Browser icons created by srip - Flaticon</a>
+<nav>
+	<a href="https://www.flaticon.com/free-icons/browser" title="browser icons">Browser icons created by srip - Flaticon</a>
+	|
+	Theme <a href="https://simplecss.org">Simple Css</a>
+	|
+	Using {{ dbase }} for the database
+</nav>	
 </footer>
 
 </html>

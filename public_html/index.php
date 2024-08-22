@@ -5,6 +5,7 @@ define('BASE_PATH', dirname(__DIR__));
 use App\Twig;
 use Dotenv\Dotenv;
 use Tracy\Debugger;
+use App\SessionManager;
 use FastRoute\Dispatcher;
 use FastRoute\HttpException;
 use FastRoute\RouteCollector;
@@ -13,10 +14,9 @@ use FastRoute\HttpRequestMethodException;
 
 require_once BASE_PATH . '/vendor/autoload.php';
 
-$dotenv = Dotenv::createImmutable(BASE_PATH);
-$dotenv->load();
-
 Debugger::enable();
+
+$container = require BASE_PATH . '/config/services.php';
 
 $dispatcher = simpleDispatcher(function (RouteCollector $routeCollector) {
     $routes = include BASE_PATH . '/routes/web.php';

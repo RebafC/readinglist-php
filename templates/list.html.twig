@@ -3,15 +3,16 @@
 {% block content %}
 <table>
     <thead>
-        <tr><th>#</th><th>Title</th><th>Added</th><th>{% if showdel %}Deleted{% else %}Maintain{% endif %}</th></tr>
+        <tr><th>#</th><th>Title</th><th>Added</th>{% if showdel %}<th>Deleted</th>{% endif %}<th>Maintain</th></tr>
     </thead>
     <tbody>
 {% for row in rows %}
         <tr>
             <td>{{ "%03d"|format(row.id) }}</td>
             <td class="text-truncate"><a href={{ row.url }}>{{ row.title|truncate(25) }}</a></td>
-            <td>{{ row.added }}</td>
-            <td>{% if showdel %}{{ row.deleted }}{% else %}button to delete{% endif %}</td>
+            <td>{{ row.added_at }}</td>
+            {% if showdel %}<td>{{ row.deleted_at }}</td><td><a class="button" href="/activate/{{ row.id }}">activate</a></td>
+            {% else %}<td><a class="button" href="/delete/{{ row.id }}">delete</a></td>{% endif %}
         </tr>                
 {% endfor %}
     </tbody>
