@@ -54,7 +54,7 @@ class MainController
 
         $xml->addChild('channel');
         $xml->channel->addChild('title', 'Reading list');
-        $xml->channel->addChild('link', $_ENV['linkToSelf']);
+        $xml->channel->addChild('link', $_ENV['LINKTOSELF']);
         $xml->channel->addChild('description', 'Contains saved urls');
         $xml->channel->addChild('pubDate', date(DATE_RSS));
 
@@ -64,14 +64,14 @@ class MainController
         foreach ($rows as $row) {
             $inlineDescription = sprintf(
                 'Link: &lt;a href="%sindex.php?redirect=%s"&gt;%s&lt;/a&gt;<br/>',
-                $_ENV['linkToSelf'],
+                $_ENV['LINKTOSELF'],
                 $row['id'],
                 htmlspecialchars($row['url'])
             );
             $item = $xml->channel->addChild('item');
             $item->addChild('title', $row['title']);
             $item->addChild('description', $inlineDescription);
-            $item->addChild('link', "{$_ENV['linkToSelf']}/index.php?redirect={$row['id']}");
+            $item->addChild('link', "{$_ENV['LINKTOSELF']}/index.php?redirect={$row['id']}");
             $item->addChild('pubDate', date(DATE_RSS, strtotime($row['timestamp'])));
         }
 

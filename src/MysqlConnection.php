@@ -15,9 +15,9 @@ class MysqlConnection implements Connection
     {
         if (!isset(self::$pdo)) {
             self::$pdo = Factory::fromArray([
-                sprintf('mysql:host=%s;dbname=%s', $_ENV['mysqlHost'], $_ENV['mysqlDatabase']),
-                $_ENV['mysqlUser'],
-                $_ENV['mysqlPassword']
+                sprintf('mysql:host=%s;dbname=%s', $_ENV['DB_HOST'], $_ENV['DB_DATABASE']),
+                $_ENV['DB_USER'],
+                $_ENV['DB_PASSWORD']
             ]);
         }
 

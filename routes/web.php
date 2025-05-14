@@ -2,6 +2,7 @@
 
 return [
     ['GET', '/',                            '\App\Controllers\MainController#index'],
+    ['GET', '/install/[dbase}',             '\App\Controllers\InstallController#index'],
     ['GET', '/delete/{id}',                 '\App\Controllers\MainController#delete'],
     ['GET', '/activate/{id}',               '\App\Controllers\MainController#activate'],
     ['GET', '/showdeleted',                 '\App\Controllers\MainController#showdeleted'],

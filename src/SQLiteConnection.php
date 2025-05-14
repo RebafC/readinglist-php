@@ -14,9 +14,9 @@ class SQLiteConnection implements Connection
     {
         if (!isset(self::$pdo)) {
             self::$pdo = Factory::fromArray([
-                "sqlite:{$_ENV['sqliteDatabase']}",
-                $_ENV['mysqlUser'],
-                $_ENV['mysqlPassword']
+                "sqlite:{$_ENV['DB_DATABASE']}",
+                $_ENV['DB_USER'],
+                $_ENV['DB_PASSWORD']
             ]);
         }
 
