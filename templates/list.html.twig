@@ -1,18 +1,30 @@
 {% extends "main.html.twig" %}
 
 {% block content %}
+{{ flashmsg|raw }}
 <table>
     <thead>
-        <tr><th>#</th><th>Title</th><th>Added</th>{% if showdel %}<th>Deleted</th>{% endif %}<th>Maintain</th></tr>
+        <tr><th>#</th><th>Title</th><th>Added</th>{% if showdel %}<th>Deleted</th>{% endif %}<th>Maint</th></tr>
     </thead>
     <tbody>
 {% for row in rows %}
         <tr>
             <td>{{ "%03d"|format(row.id) }}</td>
-            <td class="text-truncate"><a href={{ row.url }}>{{ row.title|truncate(25) }}</a></td>
-            <td>{{ row.added_at }}</td>
-            {% if showdel %}<td>{{ row.deleted_at }}</td><td><a class="button" href="/activate/{{ row.id }}">activate</a></td>
-            {% else %}<td><a class="button" href="/delete/{{ row.id }}">delete</a></td>{% endif %}
+            <td class="text-truncate">
+                <details>
+                    <summary>
+                        <a href="{{ row.url }}" target="_blank" rel="noopener noreferrer">{{ row.title|truncate(35) }}</a>
+                    </summary>
+                    {{ row.url }}
+                </details>
+            </td>
+            <td>{{ row.created }}</td>
+            {% if showdel %}<td>{{ row.deleted }}</td>
+            <td>
+                <a class="button open" href="/activate/{{ row.id }}" title="undelete">➕</a> 
+                <a class="button open" href="/remove/{{ row.id }}" title="remove">❌</a>
+            </td>
+            {% else %}<td><a class="button open" href="/delete/{{ row.id }}" title="delete">❌</a></td>{% endif %}
         </tr>                
 {% endfor %}
     </tbody>

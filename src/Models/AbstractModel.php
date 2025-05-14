@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-class AbstractModel {
-    public function __construct($data) {
+class AbstractModel
+{
+    public function __construct($data)
+    {
         if (is_array($data)) {
             $data = (object) $data;
         }

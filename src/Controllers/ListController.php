@@ -1,31 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Twig;
-use App\Repositories\ReadinglistRepository;
+use App\Controllers\AbstractController;
+use App\Repositories\BloglistRepository;
+use Plasticbrain\FlashMessages\FlashMessages;
 
-class MainController
+class ListController extends AbstractController
 {
-    private $db;
-
     private $twigvars = [];
-
-    public function __construct()
-    {
-    }
 
     public function index()
     {
-        $rlrepo = new ReadinglistRepository($this->db);
-        $rows = $rlrepo->getAllNotDeleted();
-
+        $blrepo = new BloglistRepository();
+        $rows = $blrepo->getAllNotDeleted();
+        
         foreach ($rows as &$r) {
-                $r['title'] = urldecode($r['title']);
+            $r['title'] = urldecode($r['title']);
+            $r['created'] = urldecode($r['localtime']);
         }
 
         $twigvars = [
             'rows' => $rows,
+            'flashmsg' => $this->getFlashMessage(),
         ];
 
         Twig::render('list.html.twig', $twigvars);
@@ -33,16 +33,19 @@ class MainController
 
     public function showdeleted()
     {   
-        $rlrepo = new ReadinglistRepository($this->db);
-        $rows = $rlrepo->getAllDeleted();
+        $blrepo = new BloglistRepository();
+        $rows = $blrepo->getAllDeleted();
 
         foreach ($rows as &$r) {
-                $r['title'] = urldecode($r['title']);
+            $r['title'] = urldecode($r['title']);
+            $r['created'] = urldecode($r['localadd']);
+            $r['deleted'] = urldecode($r['localdel']);
         }
 
         $twigvars = [
             'rows' => $rows,
             'showdel' => true,
+            'flashmsg' => $this->getFlashMessage(),
         ];
 
         Twig::render('list.html.twig', $twigvars);
@@ -53,13 +56,13 @@ class MainController
         $xml = new \SimpleXMLElement('<rss version="2.0"></rss>');
 
         $xml->addChild('channel');
-        $xml->channel->addChild('title', 'Reading list');
+        $xml->channel->addChild('title', $_ENV['SYSTEM']);
         $xml->channel->addChild('link', $_ENV['LINKTOSELF']);
         $xml->channel->addChild('description', 'Contains saved urls');
         $xml->channel->addChild('pubDate', date(DATE_RSS));
 
-        $rlrepo = new ReadinglistRepository($this->db);
-        $rows = $rlrepo->getAllNotDeleted();
+        $blrepo = new BloglistRepository();
+        $rows = $blrepo->getAllNotDeleted();
 
         foreach ($rows as $row) {
             $inlineDescription = sprintf(
@@ -77,39 +80,5 @@ class MainController
 
         header('Content-Type:text/xml');
         echo $xml->asXML();
-    }
-
-    public function add($url, $title)
-    {
-        $url = rawurldecode($url);
-        
-        $rlrepo = new ReadinglistRepository($this->db);
-        $rlrepo->add($url, $title);
-
-        include BASE_PATH . '/templates/base.html.twig';
-    }
-
-    public function redirect()
-    {
-        $rlrepo = new ReadinglistRepository($this->db);
-        $url = $rlrepo->getUrlFromId();
-
-        if ($url !== []) {
-            header("location: {$url}");
-            die();
-        }
-        echo('Error fetching url');
-    }
-
-    public function delete($id)
-    {
-        $rlrepo = new ReadinglistRepository($this->db);
-        $rlrepo->delete($id);
-    }
-
-    public function activate($id)
-    {
-        $rlrepo = new ReadinglistRepository($this->db);
-        $rlrepo->activate($id);
     }
 }

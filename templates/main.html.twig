@@ -1,38 +1,41 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Reading List</title>
-	
-	<link rel="stylesheet" href="assets/css/simple.css">
-    <link rel="stylesheet" href="assets/css/custom.css">
-	<link rel="icon" href="assets/images/browser.png" type="image/png">
-</head>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>{{ title }}</title>
 
-<body>
+		<link rel="stylesheet" href="assets/css/simple.css">
+		<link rel="stylesheet" href="assets/css/custom.css">
+		<link rel="icon" href="assets/images/browser.png" type="image/png">
+	</head>
 
-<header>
-    <h1>Reading List</h1>
-	<nav>
-		<a href="/">List Active</a>
-		<a href="/showdeleted">List Deleted</a>
-		<a href="/showxml">List as XML</a>
-	</nav>
-</header>
+	<body>
 
-{% block content %}{% endblock %}
+		<header>
+			<h1>{{ title }}</h1>
+			<nav>
+				<a href="/">List Active</a>
+				<a href="/showdeleted">List Deleted</a>
+				<a href="/showxml">List as XML</a>
+			</nav>
+		</header>
 
-</body>
-<footer>
-<nav>
-	<a href="https://www.flaticon.com/free-icons/browser" title="browser icons">Browser icons created by srip - Flaticon</a>
-	|
-	Theme <a href="https://simplecss.org">Simple Css</a>
-	|
-	Using {{ dbase }} for the database
-</nav>	
-</footer>
+		{% block content %}{% endblock %}
+
+		<footer>
+			<nav>
+				<a href="https://www.flaticon.com/free-icons/browser" title="browser icons">Browser icons created by srip - Flaticon</a>
+				|
+					Theme
+				<a href="https://simplecss.org">Simple Css</a>
+				|
+					Using
+				{{ dbase }}
+				for the database
+			</nav>
+		</footer>
+	</body>
 
 </html>

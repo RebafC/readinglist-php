@@ -25,6 +25,9 @@ My preference is to be able to see the list, which is now the default.
 
 ```javascript
 javascript:location.href='http://yourserver.com/readinglist/add/'+encodeURIComponent(window.location.href)+'/title/'+encodeURIComponent(document.title)
+javascript:location.href='https://readinglist-php.local/add/'+encodeURIComponent(window.location.href)+'/title/'+encodeURIComponent(document.title)
+javascript:location.href='https://readinglist-php.local/add/'+encodeURIComponent(window.location.href.replace(#/#g, '\\')).+'/title/'+encodeURIComponent(document.title)
+javascript:location.href='https://readinglist-php.local/add/'+encodeURIComponent(window.location.href.replace(/\//g, '\\'))+'/title/'+encodeURIComponent(document.title)
 ```
 
 * Add url application to your favorite RSS reader.

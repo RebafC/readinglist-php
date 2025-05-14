@@ -1,6 +1,7 @@
 {
-    "name": "rebafc/readinglist-phpdotenv",
+    "name": "rebafc/readinglist-php",
     "description": "Collect URLs for later reading",
+    "_comment": "Based on https://github.com/rogierlommers/readinglist. Thanks Rogier!",
     "type": "project",
     "minimum-stability": "stable",
     "require": {

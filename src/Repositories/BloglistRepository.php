@@ -3,34 +3,38 @@
 namespace App\Repositories;
 
 use App\Twig;
-use App\SqliteConnection;
 
-class ReadinglistRepository
+use App\Traits\GetConnection;
+use App\Repositories\AbstractRepository;
+
+class BloglistRepository
 {
+    use GetConnection;
+
     private $db;
     private $sqlTable;
 
     public function __construct()
     {
-        $this->db = SqliteConnection::connect();
+        $this->db = $this->getDB($_ENV['DB_TYPE']);
+
         Twig::addGlobalVar('dbase', $this->db->getDriver());
-        $this->sqlTable = $_ENV['sqlTable'];
-
+        $this->sqlTable = $_ENV['DB_TABLE'];
     }
-
     public function getAllNotDeleted()
     {
         return $this->db->run(<<<SQL
-SELECT `id`, `added_at`, `title`, `url` FROM `{$this->sqlTable}`
-WHERE `deleted_at` IS NULL ORDER BY `id` DESC LIMIT 0,50;
+SELECT `id`, datetime(`created`, 'localtime') as `localtime`, `title`, `url` FROM `{$this->sqlTable}`
+WHERE `deleted` IS NULL ORDER BY `id` DESC LIMIT 0,50;
 SQL);
     }
 
     public function getAllDeleted()
     {
         return $this->db->run(<<<SQL
-SELECT `id`, `title`, `url`, `added_at`, `deleted_at` FROM `{$this->sqlTable}`
-WHERE `deleted_at` IS NOT NULL ORDER BY `id` DESC LIMIT 0,50;
+SELECT `id`, `title`, `url`, datetime(`created`, 'localtime') as `localadd`, `created`, 
+    datetime(`deleted`, 'localtime') as `localdel`, `deleted` FROM `{$this->sqlTable}`
+WHERE `deleted` IS NOT NULL ORDER BY `id` DESC LIMIT 0,50;
 SQL);
     }
 
@@ -56,7 +60,7 @@ SQL);
         $this->db->update(
             $this->sqlTable,
             [
-                'deleted_at' => date('Y-m-d H:i:s')
+                'deleted' => gmdate('Y-m-d H:i:s')
             ],
             [
                 'id' => $id
@@ -68,7 +72,7 @@ SQL);
         $this->db->update(
             $this->sqlTable,
             [
-                'deleted_at' => null
+                'deleted' => null
             ],
             [
                 'id' => $id
